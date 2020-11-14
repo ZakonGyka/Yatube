@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Записи сообщества {{ group }}{% endblock %}
+{% block header %}{{ group }}{% endblock %}
+{% block content %}
+
+    {% load thumbnail %}
+            {% thumbnail "https://images.wallpaperscraft.ru/image/astronavt_kosmonavt_skafandr_137841_1920x1080.jpg" "2500x860" crop="center" as im %}
+                <img class="card-img" src="{{ im.url }}" alt="альтернативный текст">
+        {% endthumbnail %}
+
+    {% for post in page %}
+    <p>
+        {{ group.description|linebreaksbr }}
+    </p>
+        <p>
+        {{ post.text|linebreaksbr }}
+        </p>
+    <h3>
+        Автор: {{ post.author }}, дата публикации: {{ post.pub_date|date:"d M Y" }}
+    </h3>
+        {% if not forloop.last %}<hr>{% endif %}
+    {% endfor %}
+
+    {% if page.has_other_pages %}
+        {% include "paginator.html" with items=page paginator=paginator %}
+    {% endif %}
+
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Последние обновления на сайте{% endblock %}
+{% block header %}{% endblock %}
+
+{% block content %}
+
+        {% load thumbnail %}
+            {% thumbnail "tests/MilkyWay.jpg" "1920x1080" crop="center" as im %}
+                <img class="card-img" src="media/tests/MilkyWay.jpg" width="1280" height="600" alt="альтернативный текст">
+        {% endthumbnail %}
+
+        {% load cache %}
+        {% cache 20 index_page %}
+
+            {% for post in page %}
+                <h4>
+                    Автор: <a href="{% url 'profile' post.author.username %}"><strong>{{ post.author.username }}</strong></a>
+                </h4>
+                {% if post.group.slug %}
+
+                        <strong class="font-weight-normal font-size-medium"> Группа </strong>
+                        <a href="{% url 'group' post.group.slug %}"><strong class="font-weight-normal">{{ post.group }}</strong></a>
+
+                {% endif %}
+                    <p>{{ post.text|linebreaksbr }}</p>
+                <div class="text-muted text-right" >
+                    <h6>
+                        Дата публикации: {{ post.pub_date|date:"d M Y" }}
+                    </h6>
+                </div>
+                {% if not forloop.last %}<hr>{% endif %}
+            {% endfor %}
+
+        {% endcache %}
+
+        {% if page.has_other_pages %}
+            {% include "paginator.html" with items=page paginator=paginator %}
+        {% endif %}
+
+{% endblock %}
