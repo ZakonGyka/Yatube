@@ -12,6 +12,8 @@
                 <img class="card-img" src="{{ im.url }}" alt="альтернативный текст">
         {% endthumbnail %}
 
+        {% include 'mini-templates/subscribe button.html' with author=author %}
+
         {% include 'mini-templates/author_info.html' with author=author %}
 
             <div class="col-md-9">

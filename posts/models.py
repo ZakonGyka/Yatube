@@ -72,3 +72,16 @@ class Comment(models.Model):
         verbose_name='Дата и время публикации',
         auto_now_add=True
     )
+
+
+class Follow(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="follower",
+    )
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="following",
+    )

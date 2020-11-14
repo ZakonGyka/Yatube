@@ -131,3 +131,28 @@ def add_comment(request, username, post_id):
         comment.post = post
         comment.save()
         return redirect(reverse('post_concrete', kwargs={'username': username, 'post_id': post_id}))
+
+@login_required
+def follow_index(request):
+    # информация о текущем пользователе доступна в переменной request.user
+    post_list = Post.objects.all()
+    paginator = Paginator(post_list, 15)
+    page_number = request.GET.get('page')
+    page = paginator.get_page(page_number)
+    return render(request, 'follow.html', {'page': page, 'paginator': paginator})
+    # return render(request, "follow.html", {...})
+    # return render(request, "follow.html")
+
+@login_required
+def profile_follow(request, username):
+    #author = get_object_or_404(User, username=username)
+    return render(request, "test_follow.html",)
+                  # {'author': author,
+                  # }
+                  # )
+
+
+@login_required
+def profile_unfollow(request, username):
+    # ...
+    return render(request, 'test_unfollow.html')

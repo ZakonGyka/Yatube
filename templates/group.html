@@ -4,9 +4,9 @@
 {% block content %}
 
     {% load thumbnail %}
-            {% thumbnail "https://images.wallpaperscraft.ru/image/astronavt_kosmonavt_skafandr_137841_1920x1080.jpg" "2500x860" crop="center" as im %}
-                <img class="card-img" src="{{ im.url }}" alt="альтернативный текст">
-        {% endthumbnail %}
+        {% thumbnail "https://images.wallpaperscraft.ru/image/astronavt_kosmonavt_skafandr_137841_1920x1080.jpg" "2500x860" crop="center" as im %}
+        <img class="card-img" src="{{ im.url }}" alt="альтернативный текст">
+    {% endthumbnail %}
 
     {% for post in page %}
     <p>
