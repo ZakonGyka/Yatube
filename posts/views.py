@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.views.decorators.cache import cache_page
 
 from .forms import CommentForm, PostForm
-from .models import Group, Post, User
+from .models import Group, Post, User, Follow
 
 
 # @cache_page(20)
@@ -135,18 +135,26 @@ def add_comment(request, username, post_id):
 @login_required
 def follow_index(request):
     # информация о текущем пользователе доступна в переменной request.user
-    post_list = Post.objects.all()
-    paginator = Paginator(post_list, 15)
+    user = request.user
+    follow_list = user.follower.all()
+    following_posts = []
+    for follow_post in follow_list:
+        author_posts = Post.objects.filter(author_id=follow_post.author_id)
+        following_posts.append(author_posts)
+    # post_list = Post.objects.all()
+    paginator = Paginator(following_posts, 15)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
     return render(request, 'follow.html', {'page': page, 'paginator': paginator})
-    # return render(request, "follow.html", {...})
     # return render(request, "follow.html")
 
 @login_required
 def profile_follow(request, username):
-    #author = get_object_or_404(User, username=username)
-    return render(request, "test_follow.html",)
+    author = get_object_or_404(User, username=username)
+    if request.user != author:
+        Follow.objects.create(user=request.user, author=author)
+    return redirect("profile", username)
+    # return render(request, "test_follow.html",)
                   # {'author': author,
                   # }
                   # )
@@ -154,5 +162,6 @@ def profile_follow(request, username):
 
 @login_required
 def profile_unfollow(request, username):
-    # ...
-    return render(request, 'test_unfollow.html')
+    author = get_object_or_404(User, username=username)
+    Follow.objects.get(user=request.user, author=author).delete()
+    return redirect("profile", username)
