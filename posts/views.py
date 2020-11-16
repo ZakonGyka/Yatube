@@ -37,10 +37,14 @@ def profile(request, username):
     paginator = Paginator(post_list_author, 5)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
+    following = author.following.exists()
+    print('+++++++++++++++')
+    print(following)
     return render(request, 'profile.html',
                   {'author': author,
                    'page': page,
                    'paginator': paginator,
+                   'following': following,
                    }
                   )
 
@@ -132,21 +136,23 @@ def add_comment(request, username, post_id):
         comment.save()
         return redirect(reverse('post_concrete', kwargs={'username': username, 'post_id': post_id}))
 
+
 @login_required
 def follow_index(request):
     # информация о текущем пользователе доступна в переменной request.user
     user = request.user
     follow_list = user.follower.all()
+    print('------')
+    print(follow_list)
     following_posts = []
     for follow_post in follow_list:
-        author_posts = Post.objects.filter(author_id=follow_post.author_id)
+        author_posts = Post.objects.filter(author__following__user=follow_post)
         following_posts.append(author_posts)
-    # post_list = Post.objects.all()
     paginator = Paginator(following_posts, 15)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
     return render(request, 'follow.html', {'page': page, 'paginator': paginator})
-    # return render(request, "follow.html")
+
 
 @login_required
 def profile_follow(request, username):

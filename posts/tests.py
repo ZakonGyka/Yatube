@@ -196,7 +196,7 @@ class ProfileTest(TestCase):
     #     self.assertEqual(response.status_code, 500)
     #     # self.assertContains(response, 'Error handler content', status_code=500)
 
-    def test_cache_after_time(self):
+    def test_cache(self):
         default_text = 'Test text'
         key = make_template_fragment_key('index_page')
 
@@ -212,3 +212,15 @@ class ProfileTest(TestCase):
         cache.touch(key, 0)
         response_newest = self.auth_client.get(reverse('index'))
         self.assertNotEqual(response_old.content, response_newest.content)
+
+    def test_view_post_with_follow(self):
+        self.authorized_client.get(reverse(
+            'profile_follow', kwargs={'username': self.second_user.username}))
+        self.second_authorized_client.post(
+            reverse('new_post'),
+            {'text': 'Это текст публикации второго пользователя',
+             'group': self.test_group.id},
+            follow=True)
+        response = self.authorized_client.get(reverse('follow_index'))
+        self.assertContains(
+            response, 'Это текст публикации второго пользователя')
