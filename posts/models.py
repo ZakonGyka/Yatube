@@ -88,8 +88,3 @@ class Follow(models.Model):
 
     class Meta:
         models.UniqueConstraint(fields=['user', 'author'], name='following_unique')
-        # uniqueConstraint = ('-pub_date',)
-        # models.UniqueConstraint(fields=['app_uuid'])
-        # models.UniqueConstraint('author')
-        # UniqueConstraint(fields=['chambre', 'date'], name='reservation_unique')
-
