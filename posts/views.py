@@ -86,6 +86,7 @@ def new_post(request):
                   )
 
 
+@login_required(login_url='/auth/login/')
 def post_edit(request, username, post_id):
     post = get_object_or_404(Post, id=post_id, author__username=username)
     login_user = request.user
@@ -124,6 +125,7 @@ def server_error(request):
     return render(request, "misc/500.html", status=500)
 
 
+@login_required(login_url='/auth/login/')
 def add_comment(request, username, post_id):
     post = get_object_or_404(Post, id=post_id, author__username=username)
     if request.method != "POST":
