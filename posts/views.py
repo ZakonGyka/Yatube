@@ -139,16 +139,7 @@ def add_comment(request, username, post_id):
 
 @login_required
 def follow_index(request):
-    # информация о текущем пользователе доступна в переменной request.user
-    user = request.user
     following_list = Post.objects.filter(author__following__user=request.user)
-    # follow_list = user.follower.all()
-    # print('------')
-    # print(follow_list)
-    # following_posts = []
-    # for follow_post in follow_list:
-    #     author_posts = Post.objects.filter(author__following__user=follow_post)
-    #     following_posts.append(author_posts)
     paginator = Paginator(following_list, 15)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
@@ -161,10 +152,6 @@ def profile_follow(request, username):
     if request.user != author:
         Follow.objects.create(user=request.user, author=author)
     return redirect("profile", username)
-    # return render(request, "test_follow.html",)
-                  # {'author': author,
-                  # }
-                  # )
 
 
 @login_required
