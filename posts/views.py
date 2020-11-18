@@ -38,8 +38,8 @@ def profile(request, username):
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
     following = author.following.exists()
-    print('+++++++++++++++')
-    print(following)
+    # print('+++++++++++++++')
+    # print(following)
     return render(request, 'profile.html',
                   {'author': author,
                    'page': page,
@@ -142,7 +142,7 @@ def add_comment(request, username, post_id):
 @login_required
 def follow_index(request):
     following_list = Post.objects.filter(author__following__user=request.user)
-    paginator = Paginator(following_list, 15)
+    paginator = Paginator(following_list, 1)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
     return render(request, 'follow.html', {'page': page, 'paginator': paginator})

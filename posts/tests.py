@@ -214,13 +214,33 @@ class ProfileTest(TestCase):
         self.assertNotEqual(response_old.content, response_newest.content)
 
     def test_view_post_with_follow(self):
-        self.authorized_client.get(reverse(
-            'profile_follow', kwargs={'username': self.second_user.username}))
-        self.second_authorized_client.post(
+        second_user = User.objects.create_user(
+            username='TestMan_2',
+            email='TestMan_2.s@skynet.com',
+            password='123456789')
+        self.auth_client.force_login(second_user)
+
+        self.auth_client.post(
             reverse('new_post'),
-            {'text': 'Это текст публикации второго пользователя',
-             'group': self.test_group.id},
-            follow=True)
-        response = self.authorized_client.get(reverse('follow_index'))
-        self.assertContains(
-            response, 'Это текст публикации второго пользователя')
+            {'text': 'Текст поста второго автора -> TestMan_2',
+             'group': self.default_group.id},
+            )
+        # Перелог на первого пользователя TestMan
+        self.auth_client.force_login(self.user)
+
+        # post = Post.objects.first()
+        # data = self.auth_client.get(reverse('post_concrete', kwargs={'username': second_user.username,
+        #                                                              'post_id': post.id}))
+        # print('//////////')
+        # print(data.context['post'])
+
+        # Оформление подписки
+        self.auth_client.get(reverse('profile_follow', kwargs={'username': second_user.username}))
+        response = self.auth_client.get(reverse('follow_index'))
+        print('-*--*-*----*-*--*-++++')
+        print(response)
+        print(response.context['page'][0].author)
+        print(response.context['page'][0].text)
+        print(response.context['page'][0].group)
+        self.assertEqual(response.context['page'][0].text, 'Текст поста второго автора -> TestMan_2')
+        # self.assertContains(response, 'Текст поста второго автора -> TestMan_2', status_code=200, html=True)
