@@ -227,13 +227,6 @@ class ProfileTest(TestCase):
             )
         # Перелог на первого пользователя TestMan
         self.auth_client.force_login(self.user)
-
-        # post = Post.objects.first()
-        # data = self.auth_client.get(reverse('post_concrete', kwargs={'username': second_user.username,
-        #                                                              'post_id': post.id}))
-        # print('//////////')
-        # print(data.context['post'])
-
         # Оформление подписки
         self.auth_client.get(reverse('profile_follow', kwargs={'username': second_user.username}))
         response = self.auth_client.get(reverse('follow_index'))
