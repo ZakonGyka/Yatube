@@ -229,11 +229,8 @@ class ProfileTest(TestCase):
         self.auth_client.force_login(self.user)
         # Оформление подписки
         self.auth_client.get(reverse('profile_follow', kwargs={'username': second_user.username}))
+        # Страница с подписками
         response = self.auth_client.get(reverse('follow_index'))
-        print('-*--*-*----*-*--*-++++')
-        print(response)
-        print(response.context['page'][0].author)
-        print(response.context['page'][0].text)
-        print(response.context['page'][0].group)
         self.assertEqual(response.context['page'][0].text, 'Текст поста второго автора -> TestMan_2')
+        self.assertEqual(response.context['page'][0].author, second_user)
         # self.assertContains(response, 'Текст поста второго автора -> TestMan_2', status_code=200, html=True)
