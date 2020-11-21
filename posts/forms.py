@@ -12,6 +12,9 @@ class PostForm(forms.ModelForm):
         widgets = {
             'text': Textarea(attrs={'cols': 80, 'rows': 10}),
         }
+        help_texts = {
+            'text': 'Поля со * обязательны для заполнения',
+        }
 
 
 class CommentForm(forms.ModelForm):
@@ -21,4 +24,7 @@ class CommentForm(forms.ModelForm):
         fields = ('text',)
         widgets = {
             'text': Textarea(attrs={'cols': 79, 'rows': 10}),
+        }
+        help_texts = {
+            'text': 'Поля со * обязательны для заполнения',
         }

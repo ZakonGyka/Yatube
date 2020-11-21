@@ -31,6 +31,7 @@ def group_posts(request, slug):
                   )
 
 
+# @login_required(login_url='/auth/login/')
 def profile(request, username):
     author = get_object_or_404(User, username=username)
     post_list_author = author.posts.all()

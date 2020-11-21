@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.db.models import UniqueConstraint
 
 User = get_user_model()
 
@@ -19,7 +20,6 @@ class Group(models.Model):
 class Post(models.Model):
     text = models.TextField(
         verbose_name='Текст поста',
-        help_text='Поля со * обязательны для заполнения',
     )
     pub_date = models.DateTimeField(
         verbose_name='Дата публикации',
@@ -66,7 +66,6 @@ class Comment(models.Model):
     )
     text = models.TextField(
         verbose_name='Текст комментария',
-        help_text='Поля со * обязательны для заполнения',
     )
     created = models.DateTimeField(
         verbose_name='Дата и время публикации',
@@ -87,4 +86,4 @@ class Follow(models.Model):
     )
 
     class Meta:
-        unique_together = ['user', 'author']
+        UniqueConstraint(fields=['user', 'author'], name='unique_user-author')
