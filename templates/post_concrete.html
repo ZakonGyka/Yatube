@@ -17,7 +17,7 @@
             {% endif %}
 
                 {% include 'mini-templates/post_card.html' with user=user post=post %}
-                {% include 'mini-templates/comments.html' with form=form comments=comments %}
+                {% include 'mini-templates/comments.html' with form=form comments=post.comments.all %}
 
         </div>
     </div>

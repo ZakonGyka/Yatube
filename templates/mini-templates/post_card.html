@@ -1,28 +1,28 @@
 <div class="card mb-3 mt-1 shadow-sm">
-            <div class="card-body">
-                    <p class="card-text">
-                            <!-- Ссылка на страницу автора в атрибуте href; username автора в тексте ссылки -->
-                            <a href="{% url 'post_concrete' post.author.username post.id %}"><strong class="d-block text-gray-dark">@{{ post.author.username }}</strong></a>
-                            <!-- Текст поста -->
-                                {{ post.text }}
+    <div class="card-body">
+        <p class="card-text">
+            <!-- Ссылка на страницу автора в атрибуте href; username автора в тексте ссылки -->
+            <a href="{% url 'post_concrete' post.author.username post.id %}"><strong class="d-block text-gray-dark">@{{ post.author.username }}</strong></a>
+            <!-- Текст поста -->
+                {{ post.text }}
 
-                            {% if  post.group.slug %}
-                            <a href="{% url 'group' post.group.slug %}"><strong class="d-block text-gray-dark">@{{ post.group }}</strong></a>
-                            {% endif %}
+            {% if  post.group.slug %}
+            <a href="{% url 'group' post.group.slug %}"><strong class="d-block text-gray-dark">@{{ post.group }}</strong></a>
+            {% endif %}
 
-                    </p>
-                    <div class="d-flex justify-content-between align-items-center">
-                            <div class="btn-group ">
+        </p>
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group ">
 
-                                <a class="btn btn-sm text-muted" href="{% url 'add_comment' post.author.username post.id %}" role="button">Добавить комментарий</a>
+                    <a class="btn btn-sm text-muted" href="{% url 'add_comment' post.author.username post.id %}" role="button">Добавить комментарий</a>
 
-                                {% if user.username == post.author.username %}
-                                    <a class="btn btn-sm text-muted" href="{% url 'post_edit' user.username post.id %}" role="button">Редактировать</a>
-                                {% endif %}
+                    {% if user.username == post.author.username %}
+                        <a class="btn btn-sm text-muted" href="{% url 'post_edit' user.username post.id %}" role="button">Редактировать</a>
+                    {% endif %}
 
-                            </div>
-                            <!-- Дата публикации  -->
-                            <small class="text-muted">{{ post.pub_date|date:"d M Y" }}</small>
-                    </div>
+                </div>
+                <!-- Дата публикации  -->
+                <small class="text-muted">{{ post.pub_date|date:"d M Y" }}</small>
             </div>
+    </div>
 </div>
