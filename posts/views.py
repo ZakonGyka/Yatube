@@ -38,12 +38,23 @@ def profile(request, username):
     paginator = Paginator(post_list_author, 5)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
-    following = author.following.exists()
+    following = Follow.objects.filter(author=author, user=request.user).exists()
+    print('------')
+    print(following)
+    following_count = Post.objects.filter(author__following__user=request.user).count()
+    follower_count = Post.objects.filter(author__follower__user=request.user).count()
+    print('+++profile+++')
+    print('+++Подписан+++')
+    print(following_count)
+    print('+++Подписки+++')
+    print(follower_count)
     return render(request, 'profile.html',
                   {'author': author,
                    'page': page,
                    'paginator': paginator,
                    'following': following,
+                   'following_count': following_count,
+                   'follower_count': follower_count,
                    }
                   )
 
@@ -138,7 +149,11 @@ def follow_index(request):
     paginator = Paginator(following_list, 10)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
-    return render(request, 'follow.html', {'page': page, 'paginator': paginator})
+    print('++++++follow_index++++++++')
+    print(len(following_list))
+    print('-----follow_index-----------')
+    print(len(paginator.page(1)))
+    return render(request, 'follow.html', {'page': page, 'paginator': paginator, 'following_list': following_list})
 
 
 @login_required

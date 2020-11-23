@@ -12,9 +12,9 @@
                 <img class="card-img" src="{{ im.url }}" alt="альтернативный текст">
         {% endthumbnail %}
 
-        {% include 'mini-templates/subscribe button.html' with author=author following=following%}
+        {% include 'mini-templates/subscribe button.html' with author=author following=following %}
 
-        {% include 'mini-templates/author_info.html' with author=author %}
+        {% include 'mini-templates/author_info.html' with author=author following_count=following_count follower_count=follower_count %}
 
             <div class="col-md-9">
                 {% for post in page %}
