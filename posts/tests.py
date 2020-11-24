@@ -23,15 +23,10 @@ class ProfileTest(TestCase):
 
         self.not_auth_client = Client()
 
-    def assert_origin_params(self, response, user, default_text, group):
+    def assert_params(self, response, user, text, group):
         self.assertEqual(response.author, user)
-        self.assertEqual(response.text, default_text)
+        self.assertEqual(response.text, text)
         self.assertEqual(response.group, group)
-
-    def assert_edit_params(self, response, user, new_text, new_group):
-        self.assertEqual(response.author, user)
-        self.assertEqual(response.text, new_text)
-        self.assertEqual(response.group, new_group)
 
     def test_profile(self):
         response_profile = self.auth_client.get(reverse('profile', kwargs={'username': self.user.username}))
@@ -86,10 +81,10 @@ class ProfileTest(TestCase):
             response_url = self.auth_client.get(url)
             self.assertEqual(response_url.status_code, 200)
             if response_url.context.get('paginator') is not None:
-                post_objects = response_url.context['page'][0]
+                post_object = response_url.context['page'][0]
             else:
-                post_objects = response_url.context['post']
-            self.assert_origin_params(post_objects, self.user, default_text, self.default_group)
+                post_object = response_url.context['post']
+            self.assert_params(post_object, self.user, default_text, self.default_group)
 
     def test_post_and_group_edit(self):
         default_text = 'Test text'
@@ -133,10 +128,10 @@ class ProfileTest(TestCase):
             response_url = self.auth_client.get(url)
             self.assertEqual(response_url.status_code, 200)
             if response_url.context.get('paginator') is not None:
-                post_objects = response_url.context['page'][0]
+                post_object = response_url.context['page'][0]
             else:
-                post_objects = response_url.context['post']
-            self.assert_edit_params(post_objects, self.user, new_text, new_group)
+                post_object = response_url.context['post']
+            self.assert_params(post_object, self.user, new_text, new_group)
 
         response_group_origin = self.auth_client.get(reverse('group', kwargs={'slug': self.default_group.slug}))
 
