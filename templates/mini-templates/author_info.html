@@ -8,6 +8,7 @@
             <div class="h4 text-muted">
                  <!-- username автора -->
                 <a href="{% url 'profile' author.username %}"><strong class="d-block text-gray-dark">@{{ author.username }}</strong></a>
+                    {% include 'mini-templates/subscribe button.html' with author=author following=following %}
             </div>
         </div>
         <ul class="list-group list-group-flush">
