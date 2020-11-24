@@ -3,6 +3,7 @@ from django.test import Client, TestCase
 from django.urls import reverse
 from posts.models import Group, Post, User
 from django.core.cache.utils import make_template_fragment_key
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 
 class ProfileTest(TestCase):
@@ -184,13 +185,6 @@ class ProfileTest(TestCase):
         response = self.auth_client.get(reverse('page_not_found'))
         self.assertEqual(response.status_code, 404)
 
-    # def test_500(self):
-    #     response = self.auth_client.get(reverse('server_error'))
-    #     print('-------')
-    #     print(response)
-    #     self.assertEqual(response.status_code, 500)
-    #     # self.assertContains(response, 'Error handler content', status_code=500)
-
     def test_cache(self):
         default_text = 'Test text'
         key = make_template_fragment_key('index_page')
@@ -204,7 +198,7 @@ class ProfileTest(TestCase):
                               )
         response_new = self.auth_client.get(reverse('index'))
         self.assertEqual(response_old.content, response_new.content)
-        cache.touch(key, 0)
+        cache.clear()
         response_newest = self.auth_client.get(reverse('index'))
         self.assertNotEqual(response_old.content, response_newest.content)
 
