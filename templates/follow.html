@@ -18,7 +18,7 @@
 
             {% for post in page %}
                 <h4>
-                    Автор: <a href="{% url 'profile' post.author.username %}"><strong>{{ post.author.username }}</strong></a>
+                    Автор: <a href="{% url 'post_concrete' post.author.username post.id %}"><strong>{{ post.author.username }}</strong></a>
                 </h4>
                 {% if post.group.slug %}
 
