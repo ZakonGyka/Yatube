@@ -139,7 +139,7 @@ class ProfileTest(TestCase):
         self.assertEqual(response_group_origin.context['paginator'].count, 0)
 
     def test_img(self):
-        with open('media/tests/test_photo.jpg', 'rb') as img:
+        with open('media/tests/matrix.jpg', 'rb') as img:
             default_text = 'Test text'
             new_text = 'edit TEXT!!!'
             new_group = Group.objects.create(

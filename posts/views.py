@@ -152,10 +152,6 @@ def follow_index(request):
     paginator = Paginator(following_list, 10)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
-    print('++++++follow_index++++++++')
-    print(len(following_list))
-    print('-----follow_index-----------')
-    print(len(paginator.page(1)))
     return render(request, 'follow.html', {'page': page, 'paginator': paginator, 'following_list': following_list})
 
 

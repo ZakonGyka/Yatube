@@ -17,6 +17,7 @@ __pycache__/
 
 static/
 posts/static/
-media/
+media/posts
+media/cache
 
 db.sqlite3
