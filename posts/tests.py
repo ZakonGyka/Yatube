@@ -4,6 +4,9 @@ from django.urls import reverse
 from posts.models import Group, Post, User
 from django.core.cache.utils import make_template_fragment_key
 from django.core.files.uploadedfile import SimpleUploadedFile
+import py_compile
+import binascii
+import io
 
 
 class ProfileTest(TestCase):
@@ -136,49 +139,80 @@ class ProfileTest(TestCase):
         self.assertEqual(response_group_origin.context['paginator'].count, 0)
 
     def test_img(self):
-        # img = SimpleUploadedFile('matrix.jpg', open(
-            #'media/tests/matrix.jpg', 'rb', ), content_type='image')
-        with open('media/tests/matrix.jpg', 'rb') as img:
-            default_text = 'Test text'
-            new_text = 'edit TEXT!!!'
-            new_group = Group.objects.create(
-                title='Muscle_Cars',
-                slug='cars',
-                description='About cars'
-            )
-            response = self.auth_client.post(reverse('new_post'),
-                                             data={
-                                                 'text': default_text,
-                                                 'group': self.default_group.id,
-                                             }
-                                             )
-            self.assertEqual(response.status_code, 302)
+        img = (open('media/tests/test_red.jpg', 'rb')).read()
+        # print('++++++++')
+        # print(img)
+        img_in_bytes = (b'\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x01\x00`\x00`\x00\x00\xff\xdb\x00C\x00\x02\x01\x01'
+                        b'\x02\x01\x01\x02\x02\x02\x02\x02\x02\x02\x02\x03\x05\x03\x03\x03\x03\x03\x06\x04\x04\x03'
+                        b'\x05\x07\x06\x07\x07\x07\x06\x07\x07\x08\t\x0b\t\x08\x08\n\x08\x07\x07\n\r\n\n\x0b\x0c\x0c'
+                        b'\x0c\x0c\x07\t\x0e\x0f\r\x0c\x0e\x0b\x0c\x0c\x0c\xff\xdb\x00C\x01\x02\x02\x02\x03\x03\x03'
+                        b'\x06\x03\x03\x06\x0c\x08\x07\x08\x0c\x0c\x0c\x0c\x0c\x0c\x0c\x0c\x0c\x0c\x0c\x0c\x0c\x0c'
+                        b'\x0c\x0c\x0c\x0c\x0c\x0c\x0c\x0c\x0c\x0c\x0c\x0c\x0c\x0c\x0c\x0c\x0c\x0c\x0c\x0c\x0c\x0c'
+                        b'\x0c\x0c\x0c\x0c\x0c\x0c\x0c\x0c\x0c\x0c\x0c\x0c\x0c\x0c\xff\xc0\x00\x11\x08\x00\x01\x00'
+                        b'\x01\x03\x01"\x00\x02\x11\x01\x03\x11\x01\xff\xc4\x00\x1f\x00\x00\x01\x05\x01\x01\x01\x01'
+                        b'\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\xff\xc4'
+                        b'\x00\xb5\x10\x00\x02\x01\x03\x03\x02\x04\x03\x05\x05\x04\x04\x00\x00\x01}\x01\x02\x03\x00'
+                        b'\x04\x11\x05\x12!1A\x06\x13Qa\x07"q\x142\x81\x91\xa1\x08#B\xb1\xc1\x15R\xd1\xf0$3br\x82\t\n'
+                        b'\x16\x17\x18\x19\x1a%&\'('
+                        b')*456789:CDEFGHIJSTUVWXYZcdefghijstuvwxyz\x83\x84\x85\x86\x87\x88\x89\x8a\x92\x93\x94\x95'
+                        b'\x96\x97\x98\x99\x9a\xa2\xa3\xa4\xa5\xa6\xa7\xa8\xa9\xaa\xb2\xb3\xb4\xb5\xb6\xb7\xb8\xb9'
+                        b'\xba\xc2\xc3\xc4\xc5\xc6\xc7\xc8\xc9\xca\xd2\xd3\xd4\xd5\xd6\xd7\xd8\xd9\xda\xe1\xe2\xe3'
+                        b'\xe4\xe5\xe6\xe7\xe8\xe9\xea\xf1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xff\xc4\x00\x1f\x01'
+                        b'\x00\x03\x01\x01\x01\x01\x01\x01\x01\x01\x01\x00\x00\x00\x00\x00\x00\x01\x02\x03\x04\x05'
+                        b'\x06\x07\x08\t\n\x0b\xff\xc4\x00\xb5\x11\x00\x02\x01\x02\x04\x04\x03\x04\x07\x05\x04\x04'
+                        b'\x00\x01\x02w\x00\x01\x02\x03\x11\x04\x05!1\x06\x12AQ\x07aq\x13"2\x81\x08\x14B\x91\xa1\xb1'
+                        b'\xc1\t#3R\xf0\x15br\xd1\n\x16$4\xe1%\xf1\x17\x18\x19\x1a&\'('
+                        b')*56789:CDEFGHIJSTUVWXYZcdefghijstuvwxyz\x82\x83\x84\x85\x86\x87\x88\x89\x8a\x92\x93\x94'
+                        b'\x95\x96\x97\x98\x99\x9a\xa2\xa3\xa4\xa5\xa6\xa7\xa8\xa9\xaa\xb2\xb3\xb4\xb5\xb6\xb7\xb8'
+                        b'\xb9\xba\xc2\xc3\xc4\xc5\xc6\xc7\xc8\xc9\xca\xd2\xd3\xd4\xd5\xd6\xd7\xd8\xd9\xda\xe2\xe3'
+                        b'\xe4\xe5\xe6\xe7\xe8\xe9\xea\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xff\xda\x00\x0c\x03\x01'
+                        b'\x00\x02\x11\x03\x11\x00?\x00\xf9\xae\x8a(\xaf\xc0\xcf\xf6\x80\xff\xd9')
+        # r_img = binascii.a2b_uu(img)
+        # bytes_img = io.BytesIO(img)
+        # upload_img = SimpleUploadedFile(name='test_matrix.jpg', content=bytes_img, content_type='image/jpeg')
+        img = SimpleUploadedFile('test_red.jpg', img_in_bytes)
+        # with open('media/tests/matrix.jpg', 'rb') as img:
 
-            post_conc = Post.objects.last()
+        default_text = 'Test text'
+        new_text = 'edit TEXT!!!'
+        new_group = Group.objects.create(
+            title='Muscle_Cars',
+            slug='cars',
+            description='About cars'
+        )
+        response = self.auth_client.post(reverse('new_post'),
+                                         data={
+                                             'text': default_text,
+                                             'group': self.default_group.id,
+                                         }
+                                         )
+        self.assertEqual(response.status_code, 302)
 
-            response = self.auth_client.post(reverse('post_edit',
-                                                     kwargs={'username': post_conc.author,
-                                                             'post_id': post_conc.id
-                                                             }
-                                                     ),
-                                             data={
-                                                 'text': new_text,
-                                                 'image': img,
-                                                 'group': new_group.id,
-                                             },
-                                             )
-            self.assertEqual(response.status_code, 302)
+        post_conc = Post.objects.last()
 
-            urls = (
-                reverse('index'),
-                reverse('profile', kwargs={'username': self.user.username}),
-                reverse('post_concrete', kwargs={'username': self.user.username, 'post_id': post_conc.id}),
-                reverse('group', kwargs={'slug': self.default_group.slug}),
-            )
+        response = self.auth_client.post(reverse('post_edit',
+                                                 kwargs={'username': post_conc.author,
+                                                         'post_id': post_conc.id
+                                                         }
+                                                 ),
+                                         data={
+                                             'text': new_text,
+                                             'image': img,
+                                             'group': new_group.id,
+                                         },
+                                         )
+        self.assertEqual(response.status_code, 302)
 
-            for url in urls:
-                response_url = self.client.get(url)
-                self.assertContains(response_url, '<img')
+        urls = (
+            reverse('index'),
+            reverse('profile', kwargs={'username': self.user.username}),
+            reverse('post_concrete', kwargs={'username': self.user.username, 'post_id': post_conc.id}),
+            reverse('group', kwargs={'slug': self.default_group.slug}),
+        )
+
+        for url in urls:
+            response_url = self.client.get(url)
+            self.assertContains(response_url, '<img')
 
     def test_404(self):
         response = self.auth_client.get(reverse('page_not_found'))
