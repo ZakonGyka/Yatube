@@ -139,9 +139,6 @@ class ProfileTest(TestCase):
         self.assertEqual(response_group_origin.context['paginator'].count, 0)
 
     def test_img(self):
-        img = (open('media/tests/test_red.jpg', 'rb')).read()
-        # print('++++++++')
-        # print(img)
         img_in_bytes = (b'\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x01\x00`\x00`\x00\x00\xff\xdb\x00C\x00\x02\x01\x01'
                         b'\x02\x01\x01\x02\x02\x02\x02\x02\x02\x02\x02\x03\x05\x03\x03\x03\x03\x03\x06\x04\x04\x03'
                         b'\x05\x07\x06\x07\x07\x07\x06\x07\x07\x08\t\x0b\t\x08\x08\n\x08\x07\x07\n\r\n\n\x0b\x0c\x0c'
@@ -167,12 +164,8 @@ class ProfileTest(TestCase):
                         b'\xb9\xba\xc2\xc3\xc4\xc5\xc6\xc7\xc8\xc9\xca\xd2\xd3\xd4\xd5\xd6\xd7\xd8\xd9\xda\xe2\xe3'
                         b'\xe4\xe5\xe6\xe7\xe8\xe9\xea\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xff\xda\x00\x0c\x03\x01'
                         b'\x00\x02\x11\x03\x11\x00?\x00\xf9\xae\x8a(\xaf\xc0\xcf\xf6\x80\xff\xd9')
-        # r_img = binascii.a2b_uu(img)
-        # bytes_img = io.BytesIO(img)
-        # upload_img = SimpleUploadedFile(name='test_matrix.jpg', content=bytes_img, content_type='image/jpeg')
-        img = SimpleUploadedFile('test_red.jpg', img_in_bytes)
-        # with open('media/tests/matrix.jpg', 'rb') as img:
 
+        img = SimpleUploadedFile('test_red.jpg', img_in_bytes)
         default_text = 'Test text'
         new_text = 'edit TEXT!!!'
         new_group = Group.objects.create(
