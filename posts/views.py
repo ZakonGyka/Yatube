@@ -1,5 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.http import HttpResponseRedirect
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.views.decorators.cache import cache_page
@@ -63,8 +65,19 @@ def profile(request, username):
 
 
 def post_concrete_view(request, username, post_id):
+    author = get_object_or_404(User, username=username)
     post = get_object_or_404(Post, id=post_id, author__username=username)
     form = CommentForm()
+    if request.user.is_authenticated:
+        following = Follow.objects.filter(author=author, user=request.user).exists()
+        return render(request, 'post_concrete.html',
+                      {
+                          'user': request.user,
+                          'post': post,
+                          'form': form,
+                          'following': following,
+                      }
+                      )
     return render(request, 'post_concrete.html',
                   {
                       'user': request.user,
@@ -143,6 +156,8 @@ def add_comment(request, username, post_id):
         comment.author = request.user
         comment.post = post
         comment.save()
+        print('+++++++++')
+        print(comment)
         return redirect(reverse('post_concrete', kwargs={'username': username, 'post_id': post_id}))
 
 

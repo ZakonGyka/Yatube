@@ -7,10 +7,8 @@
     {% include "widgets/menu.html" with index=True %}
 
         {% load thumbnail %}
-            {% thumbnail "tests/LtW_Products_Subscription1.jpg" "1920x1080" crop="center" as im %}
-                <img class="card-img" src="media/tests/MilkyWay.jpg" width="1280" height="600" alt="альтернативный текст">
-{#            {% thumbnail "https://secureservercdn.net/198.71.233.129/2z1.aab.myftpupload.com/wp-content/uploads/2019/01/LtW_Products_Subscription1.jpg" "1500x860" crop="center" as im %}#}
-{#            <img class="card-img" src="{{ im.url }}" alt="альтернативный текст">#}
+            {% thumbnail "https://secureservercdn.net/198.71.233.129/2z1.aab.myftpupload.com/wp-content/uploads/2019/01/LtW_Products_Subscription1.jpg" "1500x860" crop="center" as im %}
+            <img class="card-img" src="{{ im.url }}" alt="альтернативный текст">
         {% endthumbnail %}
 
 {#         {% load cache %}#}
