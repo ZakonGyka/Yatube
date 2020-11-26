@@ -4,9 +4,6 @@ from django.urls import reverse
 from posts.models import Group, Post, User
 from django.core.cache.utils import make_template_fragment_key
 from django.core.files.uploadedfile import SimpleUploadedFile
-import py_compile
-import binascii
-import io
 
 
 class ProfileTest(TestCase):
@@ -144,8 +141,7 @@ class ProfileTest(TestCase):
             b'\x01\x0a\x00\x01\x00\x2c\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02'
             b'\x02\x4c\x01\x00\x3b'
         )
-        # img_in_bytes = b'GIF89a\x01\x00\x01\x00\x00\xff\x00,\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x00;'
-        img = SimpleUploadedFile('test_red.jpg', img_in_bytes)
+        img = SimpleUploadedFile('small.gif', img_in_bytes)
         default_text = 'Test text'
         new_text = 'edit TEXT!!!'
         new_group = Group.objects.create(
