@@ -11,26 +11,11 @@
             <img class="card-img" src="{{ im.url }}" alt="альтернативный текст">
         {% endthumbnail %}
 
-{#         {% load cache %}#}
+{#        {% load cache %}#}
 {#        {% cache 20 index_page %}#}
 
             {% for post in page %}
-                <h4>
-                    Автор: <a href="{% url 'post_concrete' post.author.username post.id %}"><strong>{{ post.author.username }}</strong></a>
-                </h4>
-                {% if post.group.slug %}
-
-                        <strong class="font-weight-normal font-size-medium"> Группа </strong>
-                        <a href="{% url 'group' post.group.slug %}"><strong class="font-weight-normal">{{ post.group }}</strong></a>
-
-                {% endif %}
-                    <p>{{ post.text|linebreaksbr }}</p>
-                <div class="text-muted text-right" >
-                    <h6>
-                        Дата публикации: {{ post.pub_date|date:"d M Y" }}
-                    </h6>
-                </div>
-                {% if not forloop.last %}<hr>{% endif %}
+                {% include 'mini-templates/post_card.html' with user=user post=post %}
             {% endfor %}
 
 {#        {% endcache %}#}

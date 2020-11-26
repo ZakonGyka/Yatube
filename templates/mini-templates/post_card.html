@@ -20,8 +20,11 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div class="btn-group ">
                     <div>
-                        <a class="btn btn-sm btn-primary" href="{% url 'add_comment' post.author.username post.id %}" role="button">Добавить комментарий<br> Комментариев: {{ post.comments.count }} </a>
-{#                        <p class="text-muted"></p>#}
+                        {% if post.comments.count != 0%}
+                            <a class="btn btn-sm btn-primary" href="{% url 'add_comment' post.author.username post.id %}" role="button">Добавить комментарий<br> Комментариев: {{ post.comments.count }} </a>
+                        {% else %}
+                            <a class="btn btn-sm btn-primary" href="{% url 'add_comment' post.author.username post.id %}" role="button">Добавить комментарий</a>
+                        {% endif %}
                     </div>
                     {% if user == post.author %}
                         <a class="btn btn-sm text-muted" href="{% url 'post_edit' post.author.username post.id %}" role="button">Редактировать</a>
