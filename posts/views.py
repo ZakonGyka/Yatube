@@ -89,6 +89,7 @@ def post_concrete_view(request, username, post_id):
 
 @login_required(login_url='/auth/login/')
 def new_post(request):
+    form = PostForm()
     if request.method == 'POST':
         form = PostForm(request.POST, files=request.FILES or None, )
         if form.is_valid():
@@ -96,8 +97,6 @@ def new_post(request):
             post.author = request.user
             post.save()
             return redirect(reverse('index'))
-        return render(request, 'post_new_or_edit.html', {'form': form, 'create_post': True})
-    form = PostForm()
     return render(request,
                   'post_new_or_edit.html',
                   {'form': form,
@@ -156,8 +155,6 @@ def add_comment(request, username, post_id):
         comment.author = request.user
         comment.post = post
         comment.save()
-        print('+++++++++')
-        print(comment)
         return redirect(reverse('post_concrete', kwargs={'username': username, 'post_id': post_id}))
 
 
@@ -182,5 +179,6 @@ def profile_follow(request, username):
 @login_required
 def profile_unfollow(request, username):
     author = get_object_or_404(User, username=username)
-    Follow.objects.get(user=request.user, author=author).delete()
+    if Follow.objects.filter(user=request.user, author=author):
+        Follow.objects.get(user=request.user, author=author).delete()
     return redirect("profile", username)
