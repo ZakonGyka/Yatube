@@ -24,22 +24,14 @@ class ProfileTest(TestCase):
 
         self.not_auth_client = Client()
 
-    def assert_params(self, urls, default_text, new_text, new_group):
-        for url in urls:
-            response_url = self.auth_client.get(url)
-            self.assertEqual(response_url.status_code, 200)
-            if response_url.context.get('paginator') is not None:
-                response = response_url.context['page'][0]
-            else:
-                response = response_url.context['post']
-
-            self.assertEqual(response.author, self.user)
-            if not (new_text and new_group):
-                self.assertEqual(response.text, default_text)
-                self.assertEqual(response.group, self.default_group)
-            else:
-                self.assertEqual(response.text, new_text)
-                self.assertEqual(response.group, new_group)
+    def assert_params(self, response, default_text, new_text, new_group, author):
+        self.assertEqual(response.author, self.user)
+        if not (new_text and new_group):
+            self.assertEqual(response.text, default_text)
+            self.assertEqual(response.group, self.default_group)
+        else:
+            self.assertEqual(response.text, new_text)
+            self.assertEqual(response.group, new_group)
 
     def test_profile(self):
         response_profile = self.auth_client.get(reverse('profile', kwargs={'username': self.user.username}))
@@ -90,7 +82,14 @@ class ProfileTest(TestCase):
             reverse('post_concrete', kwargs={'username': self.user.username, 'post_id': post_conc.id}),
         )
 
-        self.assert_params(urls, default_text, new_text=None, new_group=None)
+        for url in urls:
+            response_url = self.auth_client.get(url)
+            self.assertEqual(response_url.status_code, 200)
+            if response_url.context.get('paginator') is not None:
+                response = response_url.context['page'][0]
+            else:
+                response = response_url.context['post']
+        self.assert_params(response, default_text, new_text=None, new_group=None, author=None)
 
     def test_post_and_group_edit(self):
         default_text = 'Test text'
@@ -130,7 +129,14 @@ class ProfileTest(TestCase):
             reverse('post_concrete', kwargs={'username': self.user.username, 'post_id': post_conc.id}),
         )
 
-        self.assert_params(urls, default_text, new_text, new_group)
+        for url in urls:
+            response_url = self.auth_client.get(url)
+            self.assertEqual(response_url.status_code, 200)
+            if response_url.context.get('paginator') is not None:
+                response = response_url.context['page'][0]
+            else:
+                response = response_url.context['post']
+        self.assert_params(response, default_text, new_text, new_group, author=None)
 
         response_group_origin = self.auth_client.get(reverse('group', kwargs={'slug': self.default_group.slug}))
         self.assertEqual(response_group_origin.context['paginator'].count, 0)
