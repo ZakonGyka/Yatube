@@ -2,7 +2,7 @@
     <div class="card-body">
         <p class="card-text">
             <!-- Ссылка на страницу автора в атрибуте href; username автора в тексте ссылки -->
-            <a href="{% url 'post_concrete' post.author.username post.id %}"><strong class="d-block text-gray-dark">@{{ post.author.username }}</strong></a>
+            <strong class="d-block text-gray-dark">@{{ post.author.username }}</strong>
             <!-- Текст поста -->
 
                 {% load thumbnail %}

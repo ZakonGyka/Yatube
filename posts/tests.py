@@ -12,6 +12,10 @@ class ProfileTest(TestCase):
             username='TestMan',
             email='TestMan.s@skynet.com',
             password='12345')
+        self.second_user = User.objects.create_user(
+            username='TestMan_2',
+            email='TestMan_2.s@skynet.com',
+            password='123456789')
 
         self.default_group = Group.objects.create(
             title='buildings',
@@ -195,7 +199,6 @@ class ProfileTest(TestCase):
 
     def test_cache(self):
         default_text = 'Test text'
-        key = make_template_fragment_key('index_page')
 
         response_old = self.auth_client.get(reverse('index'))
         self.auth_client.post(reverse('new_post'),
@@ -210,24 +213,35 @@ class ProfileTest(TestCase):
         response_newest = self.auth_client.get(reverse('index'))
         self.assertNotEqual(response_old.content, response_newest.content)
 
-    def test_view_post_with_follow(self):
-        second_user = User.objects.create_user(
-            username='TestMan_2',
-            email='TestMan_2.s@skynet.com',
-            password='123456789')
-        self.auth_client.force_login(second_user)
+    def test_follow_index(self):
+        self.auth_client.force_login(self.second_user)
 
         self.auth_client.post(
             reverse('new_post'),
-            {'text': 'Текст поста второго автора -> TestMan_2',
+            {'text': 'Текст от TestMan_2',
              'group': self.default_group.id},
         )
         # Перелог на первого пользователя TestMan
         self.auth_client.force_login(self.user)
         # Оформление подписки
-        self.auth_client.get(reverse('profile_follow', kwargs={'username': second_user.username}))
+        self.auth_client.get(reverse('profile_follow', kwargs={'username': self.second_user.username}))
         # Страница с подписками
         response = self.auth_client.get(reverse('follow_index'))
-        self.assertEqual(response.context['page'][0].text, 'Текст поста второго автора -> TestMan_2')
-        self.assertEqual(response.context['page'][0].author, second_user)
+        self.assertEqual(response.context['page'][0].text, 'Текст от TestMan_2')
+        self.assertEqual(response.context['page'][0].author, self.second_user)
         # self.assertContains(response, 'Текст поста второго автора -> TestMan_2', status_code=200, html=True)
+
+    def test_unfollow(self):
+        self.auth_client.force_login(self.second_user)
+        self.auth_client.post(
+            reverse('new_post'),
+            {'text': 'Текст',
+             'group': self.default_group.id},
+        )
+        self.auth_client.force_login(self.user)
+        # Оформление подписки
+        self.auth_client.get(reverse('profile_follow', kwargs={'username': self.second_user.username}))
+        # Отписка
+        self.auth_client.post(reverse('profile_unfollow', kwargs={'username': self.second_user.username}))
+        response = self.auth_client.get(reverse('follow_index'))
+        self.assertEqual(response.context['paginator'].count, 0)
