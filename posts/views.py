@@ -33,33 +33,22 @@ def group_posts(request, slug):
                   )
 
 
-# @login_required(login_url='/auth/login/')
 def profile(request, username):
     author = get_object_or_404(User, username=username)
     post_list_author = author.posts.all()
     paginator = Paginator(post_list_author, 5)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
-    if request.user.is_authenticated:
-        following = Follow.objects.filter(author=author, user=request.user).exists()
-        follower_count = Follow.objects.filter(author=author).count()
-        following_count = Follow.objects.filter(user=author).count()
-        return render(request, 'profile.html',
-                      {'author': author,
-                       'page': page,
-                       'paginator': paginator,
-                       'following': following,
-                       'following_count': following_count,
-                       'follower_count': follower_count,
-                       }
-                      )
+    following = request.user.is_authenticated and Follow.objects.filter(author=author, user=request.user).exists()
+    follower_count = request.user.is_authenticated and Follow.objects.filter(author=author).count()
+    following_count = request.user.is_authenticated and Follow.objects.filter(user=author).count()
     return render(request, 'profile.html',
                   {'author': author,
                    'page': page,
                    'paginator': paginator,
-                   #'following': following,
-                   #'following_count': following_count,
-                   #'follower_count': follower_count,
+                   'following': following,
+                   'following_count': following_count,
+                   'follower_count': follower_count,
                    }
                   )
 
