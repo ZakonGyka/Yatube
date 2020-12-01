@@ -40,8 +40,8 @@ def profile(request, username):
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
     following = request.user.is_authenticated and Follow.objects.filter(author=author, user=request.user).exists()
-    follower_count = request.user.is_authenticated and Follow.objects.filter(author=author).count()
-    following_count = request.user.is_authenticated and Follow.objects.filter(user=author).count()
+    follower_count = Follow.objects.filter(author=author).count()
+    following_count = Follow.objects.filter(user=author).count()
     return render(request, 'profile.html',
                   {'author': author,
                    'page': page,
