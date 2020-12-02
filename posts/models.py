@@ -1,8 +1,55 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
 from django.db.models import UniqueConstraint
 
+from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
+
 User = get_user_model()
+
+
+class CustomUser(AbstractBaseUser):
+
+    email = models.EmailField(
+        unique=True,
+        verbose_name=_('email address'),
+    )
+    username = models.CharField(
+        _('username'),
+        max_length=150,
+        unique=True,)
+
+    first_name = models.CharField(_('first name'), max_length=150, blank=True)
+    last_name = models.CharField(_('last name'), max_length=150, blank=True)
+
+    is_active = models.BooleanField(
+        _('active'),
+        default=True,
+        help_text=_(
+            'Designates whether this user should be treated as active. '
+            'Unselect this instead of deleting accounts.'
+        ),
+    )
+    date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
+
+    objects = BaseUserManager()
+
+    EMAIL_FIELD = 'email'
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['email']
+
+    class Meta:
+        verbose_name = _('user')
+        verbose_name_plural = _('users')
+
+    @property
+    def follower_count(self):
+        return Follow.objects.filter(author=self).count()
+
+    @property
+    def following_count(self):
+        return Follow.objects.filter(user=self).count()
 
 
 class Group(models.Model):
