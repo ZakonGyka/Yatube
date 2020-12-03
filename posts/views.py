@@ -54,21 +54,8 @@ def profile(request, username):
 
 
 def post_concrete_view(request, username, post_id):
-    author = get_object_or_404(User, username=username)
     post = get_object_or_404(Post, id=post_id, author__username=username)
     form = CommentForm()
-    if request.user.is_authenticated:
-        following = Follow.objects.filter(author=author,
-                                          user=request.user
-                                          ).exists()
-        return render(request, 'post_concrete.html',
-                      {
-                          'user': request.user,
-                          'post': post,
-                          'form': form,
-                          'following': following,
-                      }
-                      )
     return render(request, 'post_concrete.html',
                   {
                       'user': request.user,
