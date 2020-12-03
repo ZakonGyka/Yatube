@@ -1,32 +1,10 @@
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser
 from django.db import models
 from django.db.models import UniqueConstraint
 
-from django.utils.translation import gettext_lazy as _
-from django.utils import timezone
 
 User = get_user_model()
-
-
-class CustomUser(AbstractBaseUser):
-
-    email = models.EmailField(
-        unique=True,
-        verbose_name=_('email address'),
-    )
-
-    class Meta:
-        verbose_name = _('user')
-        verbose_name_plural = _('users')
-
-    @property
-    def follower_count(self):
-        return Follow.objects.filter(author=self).count()
-
-    @property
-    def following_count(self):
-        return Follow.objects.filter(user=self).count()
 
 
 class Group(models.Model):
