@@ -1,28 +1,26 @@
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.views.decorators.cache import cache_page
 
 from .forms import CommentForm, PostForm
 from .models import Follow, Group, Post, User
 
 
-# @cache_page(20)
-# кэширование через view
 def index(request):
-    post_list = Post.objects.all()
-    paginator = Paginator(post_list, 15)
+    list_of_posts = Post.objects.all()
+    paginator = Paginator(list_of_posts, 15)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
-    return render(request, 'index.html', {'page': page, 'paginator': paginator})
+    return render(request, 'index.html', {'page': page,
+                                          'paginator': paginator
+                                          })
 
 
 def group_posts(request, slug):
     group = get_object_or_404(Group, slug=slug)
-    post_list = group.posts.all()
-    paginator = Paginator(post_list, 10)
+    list_of_group_posts = group.posts.all()
+    paginator = Paginator(list_of_group_posts, 10)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
     return render(request, 'group.html', {'group': group,
@@ -34,11 +32,14 @@ def group_posts(request, slug):
 
 def profile(request, username):
     author = get_object_or_404(User, username=username)
-    post_list_author = author.posts.all()
-    paginator = Paginator(post_list_author, 5)
+    list_of_author_posts = author.posts.all()
+    paginator = Paginator(list_of_author_posts, 5)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
-    following = request.user.is_authenticated and Follow.objects.filter(author=author, user=request.user).exists()
+    following = request.user.is_authenticated and \
+        Follow.objects.filter(author=author,
+                              user=request.user
+                              ).exists()
     follower_count = Follow.objects.filter(author=author).count()
     following_count = Follow.objects.filter(user=author).count()
     return render(request, 'profile.html',
@@ -57,7 +58,9 @@ def post_concrete_view(request, username, post_id):
     post = get_object_or_404(Post, id=post_id, author__username=username)
     form = CommentForm()
     if request.user.is_authenticated:
-        following = Follow.objects.filter(author=author, user=request.user).exists()
+        following = Follow.objects.filter(author=author,
+                                          user=request.user
+                                          ).exists()
         return render(request, 'post_concrete.html',
                       {
                           'user': request.user,
@@ -105,7 +108,10 @@ def post_edit(request, username, post_id):
                                 }
                                 )
                         )
-    form = PostForm(request.POST or None, files=request.FILES or None, instance=post)
+    form = PostForm(request.POST or None,
+                    files=request.FILES or None,
+                    instance=post
+                    )
     if form.is_valid():
         post.save()
         return redirect(reverse('post_concrete',
@@ -136,23 +142,37 @@ def server_error(request):
 def add_comment(request, username, post_id):
     post = get_object_or_404(Post, id=post_id, author__username=username)
     if request.method != 'POST':
-        return redirect(reverse('post_concrete', kwargs={'username': username, 'post_id': post_id}))
+        return redirect(reverse('post_concrete', kwargs={'username': username,
+                                                         'post_id': post_id
+                                                         }
+                                )
+                        )
     form = CommentForm(request.POST)
     if form.is_valid():
         comment = form.save(commit=False)
         comment.author = request.user
         comment.post = post
         comment.save()
-        return redirect(reverse('post_concrete', kwargs={'username': username, 'post_id': post_id}))
+        return redirect(reverse('post_concrete', kwargs={'username': username,
+                                                         'post_id': post_id
+                                                         }
+                                )
+                        )
 
 
 @login_required
 def follow_index(request):
-    following_list = Post.objects.filter(author__following__user=request.user)
-    paginator = Paginator(following_list, 10)
+    list_of_following = Post.objects.filter(
+        author__following__user=request.user
+    )
+    paginator = Paginator(list_of_following, 10)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
-    return render(request, 'follow.html', {'page': page, 'paginator': paginator, 'following_list': following_list})
+    return render(request, 'follow.html', {'page': page,
+                                           'paginator': paginator,
+                                           'following_list': list_of_following
+                                           }
+                  )
 
 
 @login_required
