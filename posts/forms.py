@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import forms
 from django.forms import Textarea
 
-from .models import Post, Comment
+from .models import Comment, Post
 
 
 class PostForm(forms.ModelForm):

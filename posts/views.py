@@ -1,13 +1,12 @@
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.http import HttpResponseRedirect
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, render, redirect
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.cache import cache_page
 
 from .forms import CommentForm, PostForm
-from .models import Group, Post, User, Follow
+from .models import Follow, Group, Post, User
 
 
 # @cache_page(20)
@@ -126,17 +125,17 @@ def post_edit(request, username, post_id):
 
 def page_not_found(request, exception):
     # Переменная exception содержит отладочную информацию,
-    return render(request, "misc/404.html", {"path": request.path}, status=404)
+    return render(request, 'misc/404.html', {'path': request.path}, status=404)
 
 
 def server_error(request):
-    return render(request, "misc/500.html", status=500)
+    return render(request, 'misc/500.html', status=500)
 
 
 @login_required(login_url='/auth/login/')
 def add_comment(request, username, post_id):
     post = get_object_or_404(Post, id=post_id, author__username=username)
-    if request.method != "POST":
+    if request.method != 'POST':
         return redirect(reverse('post_concrete', kwargs={'username': username, 'post_id': post_id}))
     form = CommentForm(request.POST)
     if form.is_valid():
@@ -162,7 +161,7 @@ def profile_follow(request, username):
     if request.user != author:
         if not Follow.objects.filter(user=request.user, author=author):
             Follow.objects.create(user=request.user, author=author)
-    return redirect("profile", username)
+    return redirect('profile', username)
 
 
 @login_required
@@ -170,4 +169,4 @@ def profile_unfollow(request, username):
     author = get_object_or_404(User, username=username)
     if Follow.objects.filter(user=request.user, author=author):
         Follow.objects.get(user=request.user, author=author).delete()
-    return redirect("profile", username)
+    return redirect('profile', username)
