@@ -1,13 +1,12 @@
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.http import HttpResponseRedirect
-from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
-from django.views.decorators.cache import cache_page
+
 
 from .forms import CommentForm, PostForm
-from .models import Group, Post, User, Follow
+from .models import Group, Post, Follow, CustomUser
+# from .models import User
 
 
 # @cache_page(20)
@@ -34,7 +33,7 @@ def group_posts(request, slug):
 
 
 def profile(request, username):
-    author = get_object_or_404(User, username=username)
+    author = get_object_or_404(CustomUser, username=username)
     post_list_author = author.posts.all()
     paginator = Paginator(post_list_author, 5)
     page_number = request.GET.get('page')
@@ -54,7 +53,7 @@ def profile(request, username):
 
 
 def post_concrete_view(request, username, post_id):
-    author = get_object_or_404(User, username=username)
+    author = get_object_or_404(CustomUser, username=username)
     post = get_object_or_404(Post, id=post_id, author__username=username)
     form = CommentForm()
     if request.user.is_authenticated:
@@ -158,7 +157,7 @@ def follow_index(request):
 
 @login_required
 def profile_follow(request, username):
-    author = get_object_or_404(User, username=username)
+    author = get_object_or_404(CustomUser, username=username)
     if request.user != author:
         if not Follow.objects.filter(user=request.user, author=author):
             Follow.objects.create(user=request.user, author=author)
@@ -167,7 +166,7 @@ def profile_follow(request, username):
 
 @login_required
 def profile_unfollow(request, username):
-    author = get_object_or_404(User, username=username)
+    author = get_object_or_404(CustomUser, username=username)
     if Follow.objects.filter(user=request.user, author=author):
         Follow.objects.get(user=request.user, author=author).delete()
     return redirect("profile", username)

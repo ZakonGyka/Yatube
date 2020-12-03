@@ -1,20 +1,35 @@
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser
 from django.db import models
 from django.db.models import UniqueConstraint
-
-from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 
-User = get_user_model()
+from django.utils.translation import gettext_lazy as _
+# from django.utils import timezone
+
+# User = get_user_model()
 
 
 class CustomUser(AbstractBaseUser):
-
-    email = models.EmailField(
-        unique=True,
-        verbose_name=_('email address'),
+    username = models.CharField(
+        _('username'),
+        max_length=150,
+        unique=True, )
+    first_name = models.CharField(_('first name'), max_length=150, blank=True)
+    last_name = models.CharField(_('last name'), max_length=150, blank=True)
+    email = models.EmailField(_('email address'), blank=True)
+    is_active = models.BooleanField(
+        _('active'),
+        default=True,
+        help_text=_(
+            'Designates whether this user should be treated as active. '
+            'Unselect this instead of deleting accounts.'
+        ),
     )
+    date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
+    EMAIL_FIELD = 'email'
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['email']
 
     class Meta:
         verbose_name = _('user')
@@ -51,7 +66,7 @@ class Post(models.Model):
         db_index=True,
     )
     author = models.ForeignKey(
-        User,
+        CustomUser,
         on_delete=models.CASCADE,
         related_name='posts',
     )
@@ -84,7 +99,7 @@ class Comment(models.Model):
         on_delete=models.CASCADE,
     )
     author = models.ForeignKey(
-        User,
+        CustomUser,
         on_delete=models.CASCADE,
         related_name='comments',
     )
@@ -99,12 +114,12 @@ class Comment(models.Model):
 
 class Follow(models.Model):
     user = models.ForeignKey(
-        User,
+        CustomUser,
         on_delete=models.CASCADE,
         related_name="follower",
     )
     author = models.ForeignKey(
-        User,
+        CustomUser,
         on_delete=models.CASCADE,
         related_name="following",
     )
