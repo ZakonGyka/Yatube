@@ -128,23 +128,17 @@ def server_error(request):
 @login_required(login_url='/auth/login/')
 def add_comment(request, username, post_id):
     post = get_object_or_404(Post, id=post_id, author__username=username)
-    if request.method != 'POST':
-        return redirect(reverse('post_concrete', kwargs={'username': username,
-                                                         'post_id': post_id
-                                                         }
-                                )
-                        )
     form = CommentForm(request.POST or None)
     if form.is_valid():
         comment = form.save(commit=False)
         comment.author = request.user
         comment.post = post
         comment.save()
-        return redirect(reverse('post_concrete', kwargs={'username': username,
-                                                         'post_id': post_id
-                                                         }
-                                )
-                        )
+    return redirect(reverse('post_concrete', kwargs={'username': username,
+                                                     'post_id': post_id
+                                                     }
+                            )
+                    )
 
 
 @login_required
@@ -167,13 +161,14 @@ def profile_follow(request, username):
     author = get_object_or_404(User, username=username)
     if request.user != author:
         Follow.objects.get_or_create(user=request.user, author=author)
-        # if not Follow.objects.filter(user=request.user, author=author):
-        #     Follow.objects.create(user=request.user, author=author)
     return redirect('profile', username)
 
 
 @login_required
 def profile_unfollow(request, username):
     author = get_object_or_404(User, username=username)
+    # if Follow.objects.filter(user=request.user, author=author):
+    #     Follow.objects.get_object_or_404(user=request.user,
+    #                                      author=author).delete()
     Follow.objects.filter(user=request.user, author=author).delete()
     return redirect('profile', username)
