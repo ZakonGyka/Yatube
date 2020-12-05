@@ -2,7 +2,6 @@ from django.core.cache import cache
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase
 from django.urls import reverse
-from django.conf.urls import handler404, handler500
 from posts.models import Group, Post, User
 
 
@@ -28,7 +27,8 @@ class ProfileTest(TestCase):
 
         self.not_auth_client = Client()
 
-    def assert_params(self, response, default_text, new_text, new_group, author):
+    def assert_params(self, response, default_text,
+                      new_text, new_group, author):
         self.assertEqual(response.author, self.user)
         if not (new_text and new_group):
             self.assertEqual(response.text, default_text)
@@ -38,7 +38,9 @@ class ProfileTest(TestCase):
             self.assertEqual(response.group, new_group)
 
     def test_profile(self):
-        response_profile = self.auth_client.get(reverse('profile', kwargs={'username': self.user.username}))
+        response_profile = self.auth_client.get(
+            reverse('profile', kwargs={'username': self.user.username})
+        )
         self.assertEqual(response_profile.status_code, 200)
 
     def test_auth_user_new_post(self):
@@ -63,7 +65,9 @@ class ProfileTest(TestCase):
                                                  'text': default_text,
                                              },
                                              )
-        self.assertRedirects(response, f"{reverse('login')}?next={reverse('new_post')}", status_code=302)
+        self.assertRedirects(response,
+                             f"{reverse('login')}?next={reverse('new_post')}",
+                             status_code=302)
         self.assertEqual(Post.objects.count(), 0)
 
     def test_new_post_on_pages(self):
@@ -83,7 +87,8 @@ class ProfileTest(TestCase):
             reverse('index'),
             reverse('profile', kwargs={'username': self.user.username}),
             reverse('group', kwargs={'slug': self.default_group.slug}),
-            reverse('post_concrete', kwargs={'username': self.user.username, 'post_id': post_conc.id}),
+            reverse('post_concrete', kwargs={'username': self.user.username,
+                                             'post_id': post_conc.id}),
         )
 
         for url in urls:
@@ -93,7 +98,11 @@ class ProfileTest(TestCase):
                 response = response_url.context['page'][0]
             else:
                 response = response_url.context['post']
-        self.assert_params(response, default_text, new_text=None, new_group=None, author=None)
+        self.assert_params(response,
+                           default_text,
+                           new_text=None,
+                           new_group=None,
+                           author=None)
 
     def test_post_and_group_edit(self):
         default_text = 'Test text'
@@ -113,16 +122,17 @@ class ProfileTest(TestCase):
 
         post_conc = Post.objects.last()
 
-        response = self.auth_client.post(reverse('post_edit',
-                                                 kwargs={'username': post_conc.author,
-                                                         'post_id': post_conc.id
-                                                         }
-                                                 ),
-                                         data={
-                                             'text': new_text,
-                                             'group': new_group.id,
-                                         },
-                                         )
+        response = self.auth_client.post(
+            reverse('post_edit',
+                    kwargs={'username': post_conc.author,
+                            'post_id': post_conc.id
+                            }
+                    ),
+            data={
+                'text': new_text,
+                'group': new_group.id,
+            },
+        )
 
         self.assertEqual(response.status_code, 302)
 
@@ -130,7 +140,8 @@ class ProfileTest(TestCase):
             reverse('index'),
             reverse('profile', kwargs={'username': self.user.username}),
             reverse('group', kwargs={'slug': new_group.slug}),
-            reverse('post_concrete', kwargs={'username': self.user.username, 'post_id': post_conc.id}),
+            reverse('post_concrete', kwargs={'username': self.user.username,
+                                             'post_id': post_conc.id}),
         )
 
         for url in urls:
@@ -140,9 +151,15 @@ class ProfileTest(TestCase):
                 response = response_url.context['page'][0]
             else:
                 response = response_url.context['post']
-        self.assert_params(response, default_text, new_text, new_group, author=None)
+        self.assert_params(response,
+                           default_text,
+                           new_text,
+                           new_group,
+                           author=None)
 
-        response_group_origin = self.auth_client.get(reverse('group', kwargs={'slug': self.default_group.slug}))
+        response_group_origin = self.auth_client.get(
+            reverse('group', kwargs={'slug': self.default_group.slug})
+        )
         self.assertEqual(response_group_origin.context['paginator'].count, 0)
 
     def test_img(self):
@@ -169,23 +186,25 @@ class ProfileTest(TestCase):
 
         post_conc = Post.objects.last()
 
-        response = self.auth_client.post(reverse('post_edit',
-                                                 kwargs={'username': post_conc.author,
-                                                         'post_id': post_conc.id
-                                                         }
-                                                 ),
-                                         data={
-                                             'text': new_text,
-                                             'image': img,
-                                             'group': new_group.id,
-                                         },
-                                         )
+        response = self.auth_client.post(
+            reverse('post_edit',
+                    kwargs={'username': post_conc.author,
+                            'post_id': post_conc.id
+                            }
+                    ),
+            data={
+                'text': new_text,
+                'image': img,
+                'group': new_group.id,
+            },
+        )
         self.assertEqual(response.status_code, 302)
 
         urls = (
             reverse('index'),
             reverse('profile', kwargs={'username': self.user.username}),
-            reverse('post_concrete', kwargs={'username': self.user.username, 'post_id': post_conc.id}),
+            reverse('post_concrete', kwargs={'username': self.user.username,
+                                             'post_id': post_conc.id}),
             reverse('group', kwargs={'slug': self.default_group.slug}),
         )
 
@@ -218,18 +237,20 @@ class ProfileTest(TestCase):
 
         self.auth_client.post(
             reverse('new_post'),
-            {'text': 'Текст от TestMan_2',
+            {'text': 'text TestMan_2',
              'group': self.default_group.id},
         )
         # Перелог на первого пользователя TestMan
         self.auth_client.force_login(self.user)
         # Оформление подписки
-        self.auth_client.get(reverse('profile_follow', kwargs={'username': self.second_user.username}))
+        self.auth_client.get(
+            reverse('profile_follow',
+                    kwargs={'username': self.second_user.username})
+        )
         # Страница с подписками
         response = self.auth_client.get(reverse('follow_index'))
-        self.assertEqual(response.context['page'][0].text, 'Текст от TestMan_2')
+        self.assertEqual(response.context['page'][0].text, 'text TestMan_2')
         self.assertEqual(response.context['page'][0].author, self.second_user)
-        # self.assertContains(response, 'Текст поста второго автора -> TestMan_2', status_code=200, html=True)
 
     def test_unfollow(self):
         self.auth_client.force_login(self.second_user)
@@ -240,8 +261,14 @@ class ProfileTest(TestCase):
         )
         self.auth_client.force_login(self.user)
         # Оформление подписки
-        self.auth_client.get(reverse('profile_follow', kwargs={'username': self.second_user.username}))
+        self.auth_client.get(
+            reverse('profile_follow',
+                    kwargs={'username': self.second_user.username})
+        )
         # Отписка
-        self.auth_client.post(reverse('profile_unfollow', kwargs={'username': self.second_user.username}))
+        self.auth_client.post(
+            reverse('profile_unfollow',
+                    kwargs={'username': self.second_user.username})
+        )
         response = self.auth_client.get(reverse('follow_index'))
         self.assertEqual(response.context['paginator'].count, 0)
