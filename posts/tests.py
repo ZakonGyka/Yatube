@@ -3,6 +3,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase
 from django.urls import reverse
 from posts.models import Group, Post, User
+from yatube.urls import handler404
 
 
 class ProfileTest(TestCase):
@@ -213,7 +214,7 @@ class ProfileTest(TestCase):
             self.assertContains(response_url, '<img')
 
     def test_404(self):
-        response = self.auth_client.get(reverse('page_not_found'))
+        response = self.auth_client.get(reverse(handler404))
         self.assertEqual(response.status_code, 404)
 
     def test_cache(self):
