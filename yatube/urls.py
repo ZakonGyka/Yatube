@@ -10,10 +10,8 @@ handler404 = "posts.views.page_not_found" # noqa
 handler500 = "posts.views.server_error" # noqa
 
 urlpatterns = [
-    # path('404/', include('django.conf.urls')),
-    # path('500/', include('django.conf.urls')),
-    path("404/", posts_views.page_not_found, name="page_not_found"),
-    path("500/", posts_views.server_error, name="server_error"),
+    # path("404/", posts_views.page_not_found, name="page_not_found"),
+    # path("500/", posts_views.server_error, name="server_error"),
     path('admin/', admin.site.urls),
     path('about/', include('django.contrib.flatpages.urls')),
     path('auth/', include('users.urls')),
@@ -21,9 +19,6 @@ urlpatterns = [
     path('', include('posts.urls')),
 ]
 urlpatterns += [
-        # path('404/', handler404, name='404'),
-        # path('500/', handler500, name='500'),
-
         path('about-us/', views.flatpage,
              {'url': '/about-us/'}, name='about'),
         path('terms/', views.flatpage,
