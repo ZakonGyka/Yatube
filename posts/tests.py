@@ -214,7 +214,7 @@ class ProfileTest(TestCase):
             self.assertContains(response_url, '<img')
 
     def test_404(self):
-        response = self.auth_client.get(reverse(handler404))
+        response = self.auth_client.get('/aabf/')
         self.assertEqual(response.status_code, 404)
 
     def test_cache(self):
