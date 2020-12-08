@@ -36,10 +36,10 @@ def profile(request, username):
     paginator = Paginator(list_of_author_posts, 5)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
-    following = request.user.is_authenticated and \
-                Follow.objects.filter(author=author,
-                                      user=request.user
-                                      ).exists()
+    following = (request.user.is_authenticated and
+                 Follow.objects.filter(author=author,
+                                       user=request.user
+                                       ).exists())
     follower_count = Follow.objects.filter(author=author).count()
     following_count = Follow.objects.filter(user=author).count()
     return render(request, 'profile.html',
@@ -167,7 +167,6 @@ def profile_follow(request, username):
 @login_required
 def profile_unfollow(request, username):
     author = get_object_or_404(User, username=username)
-    if Follow.objects.filter(user=request.user, author=author):
+    if Follow.objects.filter(user=request.user, author=author).exists():
         get_object_or_404(Follow, user=request.user, author=author).delete()
-    # Follow.objects.filter(user=request.user, author=author).delete()
     return redirect('profile', username)

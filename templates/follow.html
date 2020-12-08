@@ -11,14 +11,9 @@
             <img class="card-img" src="{{ im.url }}" alt="альтернативный текст">
         {% endthumbnail %}
 
-{#        {% load cache %}#}
-{#        {% cache 20 index_page %}#}
-
             {% for post in page %}
                 {% include 'mini-templates/post_card.html' with user=user post=post %}
             {% endfor %}
-
-{#        {% endcache %}#}
 
     {% if page.has_other_pages %}
         {% include "paginator.html" with items=page paginator=paginator %}

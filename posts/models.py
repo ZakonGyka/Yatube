@@ -1,5 +1,4 @@
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import AbstractBaseUser
 from django.db import models
 
 User = get_user_model()
@@ -87,5 +86,6 @@ class Follow(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['app_uuid', 'version_code'], name='unique appversion')
+            models.UniqueConstraint(fields=['user', 'author'],
+                                    name='unique_follow')
         ]
