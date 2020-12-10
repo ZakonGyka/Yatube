@@ -2,7 +2,9 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.flatpages import views
-from django.urls import include, path
+from django.urls import include, path, re_path
+
+from django.views.static import serve
 
 handler404 = "posts.views.page_not_found" # noqa
 handler500 = "posts.views.server_error" # noqa
@@ -13,6 +15,11 @@ urlpatterns = [
     path('auth/', include('users.urls')),
     path('auth/', include('django.contrib.auth.urls')),
     path('', include('posts.urls')),
+
+    re_path(r'^media/(?P<path>.*)$',
+            serve, {'document_root': settings.MEDIA_ROOT}),
+    re_path(r'^static/(?P<path>.*)$',
+            serve, {'document_root': settings.STATIC_ROOT}),
 ]
 urlpatterns += [
         path('about-us/', views.flatpage,
