@@ -7,7 +7,7 @@ git clone https://github.com/ZakonGyka/hw05_final.git
 ```
 2. Создать новое вертуальное окружение
 ```Python
-python3 -m venv env
+python -m venv env
 ```
 3. Устноавить зависимости
 ```Python
